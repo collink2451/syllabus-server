@@ -1,12 +1,11 @@
 import mongoose from "mongoose";
+import { Class } from "./ClassModel";
+import { Instructor } from "./InstructorModel";
 const { Schema } = mongoose;
 
 const ClassSectionSchema = new Schema(
   {
     id: {
-      type: String,
-    },
-    name: {
       type: String,
     },
     section: {
@@ -39,7 +38,6 @@ const ClassSectionSchema = new Schema(
 
 export interface ClassSection extends mongoose.Document {
   id: string;
-  name: string;
   section: string;
   crn: string;
   meetingDays: string;
@@ -47,7 +45,9 @@ export interface ClassSection extends mongoose.Document {
   finalExam: string;
   meetingLocation: string;
   courseId: string;
+  class: Class | undefined;
   instructorId: string;
+  instructor: Instructor | undefined;
 }
 
 ClassSectionSchema.set("toObject", { virtuals: true });
