@@ -1,7 +1,9 @@
 import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
+import db from './db';
 const app = express();
 dotenv.config();
+db.connect();
 const port = process.env.PORT || 3000
 
 // Use Express to publish static HTML, CSS, and JavaScript files that run in the browser. 
