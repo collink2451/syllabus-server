@@ -8,7 +8,7 @@ db.connect();
 const port = process.env.PORT || 3000
 
 import api from './api';
-app.use(cors)
+app.use(cors())
 app.use(api);
 
 // Use Express to publish static HTML, CSS, and JavaScript files that run in the browser.
