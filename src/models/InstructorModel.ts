@@ -12,6 +12,9 @@ const InstructorSchema = new Schema(
     officeHours: {
       type: String,
     },
+    office: {
+      type: String,
+    },
     appointmentInfo: {
       type: String,
     },
@@ -29,6 +32,7 @@ export interface Instructor extends mongoose.Document {
   id: string;
   name: string;
   officeHours: string;
+  office: string;
   appointmentInfo: string;
   phone: string;
   email: string;
