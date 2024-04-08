@@ -1,3 +1,4 @@
+import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import db from './db';
@@ -7,6 +8,7 @@ db.connect();
 const port = process.env.PORT || 3000
 
 import api from './api';
+app.use(cors)
 app.use(api);
 
 // Use Express to publish static HTML, CSS, and JavaScript files that run in the browser.
