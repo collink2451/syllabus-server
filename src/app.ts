@@ -11,8 +11,13 @@ import api from './api';
 app.use(cors())
 app.use(api);
 
+
 // Use Express to publish static HTML, CSS, and JavaScript files that run in the browser.
 app.use(express.static(__dirname + '/static'))
+
+app.get('/', (request, response) => {
+  response.send('Express Home Page')
+});
 
 // Custom 404 page.
 app.use((request, response) => {
