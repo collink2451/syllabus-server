@@ -53,5 +53,18 @@ router.get('/api/csci/:sectionId', async (req: Request, res: Response) => {
     res.json(section);
 });
 
+router.get('/api/csci/', async (req: Request, res: Response) => {
+    const sections = await Models.ClassSectionModel.find().lean();
+
+    for (const section of sections) {
+        const classObject = await Models.ClassModel.findOne({ id: section.courseId }).lean();
+        const instructor = await Models.InstructorModel.findOne({ id: section.instructorId }).lean();
+
+        section.class = classObject;
+        section.instructor = instructor;
+    }
+
+    res.json(sections);
+});
 
 export default router;
