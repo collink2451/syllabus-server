@@ -21,12 +21,12 @@ const parse = (row: RowDataPacket): Class => ({
   name: row.name,
   credit_hours: row.credit_hours,
   description: row.description,
-  prerequisites: JSON.parse(row.prerequisites || '[]'),
-  learning_outcomes: JSON.parse(row.learning_outcomes || '[]'),
-  program_outcomes: JSON.parse(row.program_outcomes || '[]'),
-  baccalaureate_characteristics: JSON.parse(row.baccalaureate_characteristics || '[]'),
-  textbooks: JSON.parse(row.textbooks || '[]'),
-  modules: JSON.parse(row.modules || '[]'),
+  prerequisites: row.prerequisites ?? [],
+  learning_outcomes: row.learning_outcomes ?? [],
+  program_outcomes: row.program_outcomes ?? [],
+  baccalaureate_characteristics: row.baccalaureate_characteristics ?? [],
+  textbooks: row.textbooks ?? [],
+  modules: row.modules ?? [],
 });
 
 const findOne = async (courseCode: string): Promise<Class | null> => {
