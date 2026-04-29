@@ -1,70 +1,43 @@
-import express, { Request, Response, Router } from "express";
-import * as Models from './models';
+import express, { Request, Response, Router } from 'express';
+import { ClassModel, ClassSectionModel, InstructorModel } from './models';
 
 const router: Router = express.Router();
 
 router.get('/api/class/:classId', async (req: Request, res: Response) => {
-    const classObject = await Models.ClassModel.findOne({ id: req.params.classId }).lean();
-
-    if (!classObject) {
-        res.status(404).send('Class not found');
-        return;
-    }
-
-    res.json(classObject);
+  const classObject = await ClassModel.findOne(req.params.classId);
+  if (!classObject) { res.status(404).send('Class not found'); return; }
+  res.json(classObject);
 });
 
 router.get('/api/section/:sectionId', async (req: Request, res: Response) => {
-    const section = await Models.ClassSectionModel.findOne({ id: req.params.sectionId }).lean();
-
-    if (!section) {
-        res.status(404).send('Class not found');
-        return;
-    }
-
-    res.json(section);
+  const section = await ClassSectionModel.findOne(req.params.sectionId);
+  if (!section) { res.status(404).send('Section not found'); return; }
+  res.json(section);
 });
 
 router.get('/api/csci/:sectionId', async (req: Request, res: Response) => {
-    const section = await Models.ClassSectionModel.findOne({ id: req.params.sectionId }).lean();
+  const section = await ClassSectionModel.findOne(req.params.sectionId);
+  if (!section) { res.status(404).send('Section not found'); return; }
 
-    if (!section) {
-        res.status(404).send('Section not found');
-        return;
-    }
+  const classObject = await ClassModel.findOne(section.course_id);
+  if (!classObject) { res.status(404).send('Class not found'); return; }
 
-    // Find the class that goes with this section
-    const classObject = await Models.ClassModel.findOne({ id: section.courseId }).lean();
-    if (!classObject) {
-        res.status(404).send('Class not found');
-        return;
-    }
+  const instructor = await InstructorModel.findOne(section.instructor_id);
+  if (!instructor) { res.status(404).send('Instructor not found'); return; }
 
-    // Get the instructor for this section
-    const instructor = await Models.InstructorModel.findOne({ id: section.instructorId }).lean();
-    if (!instructor) {
-        res.status(404).send('Instructor not found');
-        return;
-    }
-
-    section.class = classObject;
-    section.instructor = instructor;
-
-    res.json(section);
+  res.json({ ...section, class: classObject, instructor });
 });
 
 router.get('/api/csci/', async (req: Request, res: Response) => {
-    const sections = await Models.ClassSectionModel.find().lean();
+  const sections = await ClassSectionModel.find();
 
-    for (const section of sections) {
-        const classObject = await Models.ClassModel.findOne({ id: section.courseId }).lean();
-        const instructor = await Models.InstructorModel.findOne({ id: section.instructorId }).lean();
+  const results = await Promise.all(sections.map(async (section) => {
+    const classObject = await ClassModel.findOne(section.course_id);
+    const instructor = await InstructorModel.findOne(section.instructor_id);
+    return { ...section, class: classObject, instructor };
+  }));
 
-        section.class = classObject;
-        section.instructor = instructor;
-    }
-
-    res.json(sections);
+  res.json(results);
 });
 
 export default router;

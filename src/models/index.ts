@@ -1,5 +1,3 @@
-import ClassModel from "./ClassModel";
-import ClassSectionModel from "./ClassSectionModel";
-import InstructorModel from "./InstructorModel";
-
-export { ClassModel, ClassSectionModel, InstructorModel };
+export { ClassModel } from './ClassModel';
+export { ClassSectionModel } from './ClassSectionModel';
+export { InstructorModel } from './InstructorModel';

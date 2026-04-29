@@ -1,0 +1,56 @@
+name: "Deploy"
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - "**/*.md"
+      - "**/*.gitignore"
+      - "**/*.gitattributes"
+  workflow_dispatch:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: "Deploy Node Application"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout Repository"
+        uses: actions/checkout@v5
+
+      - name: "Set up Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: "Install Dependencies"
+        run: npm ci
+
+      - name: "Build"
+        run: npm run build
+
+      - name: "Copy Files"
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          source: "./"
+          target: "/var/www/syllabus/server"
+          strip_components: 1
+
+      - name: "Install and Restart"
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /var/www/syllabus/server
+            npm ci --omit=dev
+            pm2 restart syllabus-server || pm2 start dist/app.js --name syllabus-server

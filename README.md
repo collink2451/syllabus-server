@@ -15,7 +15,7 @@ TypeScript/Express backend that serves course syllabus data — classes, section
 
 - **Language:** TypeScript
 - **Framework:** Express
-- **Database:** MongoDB (via Mongoose)
+- **Database:** MySQL (via mysql2)
 
 ## Data Models
 
@@ -28,7 +28,7 @@ TypeScript/Express backend that serves course syllabus data — classes, section
 ### Requirements
 
 - Node.js 18+
-- MongoDB instance
+- MySQL instance
 
 ### Installation
 
@@ -41,19 +41,22 @@ npm install
 2. Create a `.env` file in the root directory:
 
 ```env
-MONGO_URI=your_mongodb_connection_string
-PORT=3000
+MYSQL_HOST=127.0.0.1
+MYSQL_USER=your_mysql_user
+MYSQL_PASSWORD=your_mysql_password
+MYSQL_DATABASE=syllabus
+PORT=5004
 ```
 
-3. Start the server:
+3. Build and start the server:
 
 ```bash
-npm start
+npm run build && npm start
 ```
 
 ## Scripts
 
 | Command | Description |
 |---------|-------------|
-| `npm start` | Build TypeScript and start the server |
+| `npm start` | Start the compiled server |
 | `npm run build` | Compile TypeScript to `dist/` |
