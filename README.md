@@ -1,6 +1,6 @@
-# Lewis Syllabus Server
+# Syllabus Server
 
-TypeScript/Express backend that serves course syllabus data — classes, sections, and instructors — for the [LewisSyllabusReact](../LewisSyllabusReact) frontend.
+TypeScript/Express backend that serves course syllabus data — classes, sections, and instructors — for the [syllabus-client](../syllabus-client) frontend.
 
 ## API Endpoints
 
