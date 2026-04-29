@@ -1,56 +1,33 @@
-import mongoose from "mongoose";
-import { Class } from "./ClassModel";
-import { Instructor } from "./InstructorModel";
-const { Schema } = mongoose;
+import { pool } from '../db';
+import { RowDataPacket } from 'mysql2/promise';
+import { Class } from './ClassModel';
+import { Instructor } from './InstructorModel';
 
-const ClassSectionSchema = new Schema(
-  {
-    id: {
-      type: String,
-    },
-    section: {
-      type: String,
-    },
-    crn: {
-      type: String,
-    },
-    meetingDays: {
-      type: String,
-    },
-    meetingTimes: {
-      type: String,
-    },
-    finalExam: {
-      type: String,
-    },
-    meetingLocation: {
-      type: String,
-    },
-    courseId: {
-      type: String,
-    },
-    instructorId: {
-      type: String,
-    },
-  },
-  { versionKey: false }
-);
-
-export interface ClassSection extends mongoose.Document {
+export interface ClassSection {
   id: string;
   section: string;
   crn: string;
-  meetingDays: string;
-  meetingTimes: string;
-  finalExam: string;
-  meetingLocation: string;
-  courseId: string;
-  class: Class | undefined;
-  instructorId: string;
-  instructor: Instructor | undefined;
+  meeting_days: string;
+  meeting_times: string;
+  final_exam: string;
+  meeting_location: string;
+  course_id: string;
+  instructor_id: string;
+  class?: Class;
+  instructor?: Instructor;
 }
 
-ClassSectionSchema.set("toObject", { virtuals: true });
+const findOne = async (id: string): Promise<ClassSection | null> => {
+  const [rows] = await pool.query<RowDataPacket[]>(
+    'SELECT * FROM class_sections WHERE id = ?', [id]
+  );
+  if (rows.length === 0) return null;
+  return rows[0] as ClassSection;
+};
 
-const ClassSectionModel = mongoose.model<ClassSection>("ClassSection", ClassSectionSchema);
-export default ClassSectionModel;
+const find = async (): Promise<ClassSection[]> => {
+  const [rows] = await pool.query<RowDataPacket[]>('SELECT * FROM class_sections');
+  return rows as ClassSection[];
+};
+
+export const ClassSectionModel = { findOne, find };

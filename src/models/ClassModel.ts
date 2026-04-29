@@ -1,56 +1,38 @@
-import mongoose from "mongoose";
-const { Schema } = mongoose;
+import { pool } from '../db';
+import { RowDataPacket } from 'mysql2/promise';
 
-const ClassSchema = new Schema(
-  {
-    name: {
-      type: String,
-    },
-    id: {
-      type: String,
-    },
-    creditHours: {
-      type: Number,
-    },
-    description: {
-      type: String,
-    },
-    prerequisites: {
-      type: [String],
-    },
-    learningOutcomes: {
-      type: [String],
-    },
-    programOutcomes: {
-      type: [String],
-    },
-    baccalaureateCharacteristics: {
-      type: [String],
-    },
-    textbooks: {
-      type: [String],
-    },
-    modules: {
-      type: [String],
-    },
-  },
-  { versionKey: false }
-);
-
-export interface Class extends mongoose.Document {
-  name: string;
+export interface Class {
   id: string;
-  creditHours: number;
+  name: string;
+  credit_hours: number;
   description: string;
   prerequisites: string[];
-  learningOutcomes: string[];
-  programOutcomes: string[];
-  baccalaureateCharacteristics: string[];
+  learning_outcomes: string[];
+  program_outcomes: string[];
+  baccalaureate_characteristics: string[];
   textbooks: string[];
   modules: string[];
 }
 
-ClassSchema.set("toObject", { virtuals: true });
+const findOne = async (id: string): Promise<Class | null> => {
+  const [rows] = await pool.query<RowDataPacket[]>(
+    'SELECT * FROM classes WHERE id = ?', [id]
+  );
+  if (rows.length === 0) return null;
+  return parseClass(rows[0]);
+};
 
-const ClassModel = mongoose.model<Class>("Class", ClassSchema);
-export default ClassModel;
+const parseClass = (row: RowDataPacket): Class => ({
+  id: row.id,
+  name: row.name,
+  credit_hours: row.credit_hours,
+  description: row.description,
+  prerequisites: JSON.parse(row.prerequisites || '[]'),
+  learning_outcomes: JSON.parse(row.learning_outcomes || '[]'),
+  program_outcomes: JSON.parse(row.program_outcomes || '[]'),
+  baccalaureate_characteristics: JSON.parse(row.baccalaureate_characteristics || '[]'),
+  textbooks: JSON.parse(row.textbooks || '[]'),
+  modules: JSON.parse(row.modules || '[]'),
+});
+
+export const ClassModel = { findOne };

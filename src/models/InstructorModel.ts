@@ -1,44 +1,22 @@
-import mongoose from "mongoose";
-const { Schema } = mongoose;
+import { pool } from '../db';
+import { RowDataPacket } from 'mysql2/promise';
 
-const InstructorSchema = new Schema(
-  {
-    id: {
-      type: String,
-    },
-    name: {
-      type: String,
-    },
-    officeHours: {
-      type: String,
-    },
-    office: {
-      type: String,
-    },
-    appointmentInfo: {
-      type: String,
-    },
-    phone: {
-      type: String,
-    },
-    email: {
-      type: String,
-    },
-  },
-  { versionKey: false }
-);
-
-export interface Instructor extends mongoose.Document {
+export interface Instructor {
   id: string;
   name: string;
-  officeHours: string;
+  office_hours: string;
   office: string;
-  appointmentInfo: string;
+  appointment_info: string;
   phone: string;
   email: string;
 }
 
-InstructorSchema.set("toObject", { virtuals: true });
+const findOne = async (id: string): Promise<Instructor | null> => {
+  const [rows] = await pool.query<RowDataPacket[]>(
+    'SELECT * FROM instructors WHERE id = ?', [id]
+  );
+  if (rows.length === 0) return null;
+  return rows[0] as Instructor;
+};
 
-const InstructorModel = mongoose.model<Instructor>("Instructor", InstructorSchema);
-export default InstructorModel;
+export const InstructorModel = { findOne };
