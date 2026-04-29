@@ -4,25 +4,25 @@ import { Class } from './ClassModel';
 import { Instructor } from './InstructorModel';
 
 export interface ClassSection {
-  id: string;
+  id: number;
+  section_code: string;
   section: string;
   crn: string;
   meeting_days: string;
   meeting_times: string;
   final_exam: string;
   meeting_location: string;
-  course_id: string;
-  instructor_id: string;
+  course_id: number;
+  instructor_id: number;
   class?: Class;
   instructor?: Instructor;
 }
 
-const findOne = async (id: string): Promise<ClassSection | null> => {
+const findOne = async (sectionCode: string): Promise<ClassSection | null> => {
   const [rows] = await pool.query<RowDataPacket[]>(
-    'SELECT * FROM class_sections WHERE id = ?', [id]
+    'SELECT * FROM class_sections WHERE section_code = ?', [sectionCode]
   );
-  if (rows.length === 0) return null;
-  return rows[0] as ClassSection;
+  return rows.length ? (rows[0] as ClassSection) : null;
 };
 
 const find = async (): Promise<ClassSection[]> => {

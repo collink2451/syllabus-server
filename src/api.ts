@@ -19,10 +19,10 @@ router.get('/api/csci/:sectionId', async (req: Request, res: Response) => {
   const section = await ClassSectionModel.findOne(req.params.sectionId);
   if (!section) { res.status(404).send('Section not found'); return; }
 
-  const classObject = await ClassModel.findOne(section.course_id);
+  const classObject = await ClassModel.findById(section.course_id);
   if (!classObject) { res.status(404).send('Class not found'); return; }
 
-  const instructor = await InstructorModel.findOne(section.instructor_id);
+  const instructor = await InstructorModel.findById(section.instructor_id);
   if (!instructor) { res.status(404).send('Instructor not found'); return; }
 
   res.json({ ...section, class: classObject, instructor });
@@ -32,8 +32,8 @@ router.get('/api/csci/', async (req: Request, res: Response) => {
   const sections = await ClassSectionModel.find();
 
   const results = await Promise.all(sections.map(async (section) => {
-    const classObject = await ClassModel.findOne(section.course_id);
-    const instructor = await InstructorModel.findOne(section.instructor_id);
+    const classObject = await ClassModel.findById(section.course_id);
+    const instructor = await InstructorModel.findById(section.instructor_id);
     return { ...section, class: classObject, instructor };
   }));
 
